@@ -39,3 +39,6 @@ app-example
 
 #code editor
 .vscode
+
+#hidden files with creadentials
+README_old.md
