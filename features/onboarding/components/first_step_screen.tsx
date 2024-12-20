@@ -1,16 +1,21 @@
 import { View, Text, TextInput, StyleSheet } from 'react-native'
 import { AppColors } from '@/assets/Colors'
 import React from 'react'
+import { ActiveSession } from '@/features/active_session/session_storage'
 
 export const FirstStepView = () => {
 
+    const userData = ActiveSession.userData
+
     const onNameChanged = (newName: string) => {
-
+        userData.name = newName
     }
 
-    const oAgeChanged = (newAge: string) => {
-
+    const oAgeChanged = (newAge: number) => {
+        userData.age = newAge
     }
+    console.log('FirstStepView - userData.age')
+    console.log(userData.age)
 
     return (
         <View style={styles.allWrap}>
@@ -21,6 +26,7 @@ export const FirstStepView = () => {
             <TextInput
                 style={styles.input}
                 onChangeText={onNameChanged}
+                defaultValue={userData.name}
                 placeholder=""
                 keyboardType="default"
             />
@@ -28,7 +34,10 @@ export const FirstStepView = () => {
             <Text style={styles.mainText}>How old are you</Text>
             <TextInput
                 style={styles.input}
-                onChangeText={oAgeChanged}
+                onChangeText={(value: string) => {
+                    oAgeChanged(parseInt(value))
+                }}
+                defaultValue={(userData.age) ? userData.age.toString() : ""}
                 placeholder=""
                 keyboardType="numeric"
             />

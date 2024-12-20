@@ -1,6 +1,7 @@
-import { View, Text, TouchableOpacity } from 'react-native'
+import { View } from 'react-native'
 import React, { useEffect } from 'react'
 import { router } from 'expo-router';
+import { ActiveSession } from '@/features/active_session/session_storage';
 
 /**
  *  This page is not for display
@@ -11,25 +12,23 @@ const entry_point_screen = () => {
 
   useEffect(
     () => {
-      // TODO: read from storage
-      let isOnboardingPassed = false;
-      if (!isOnboardingPassed) {
-        router.navigate('/onboarding_screen')
-      }
+      // call possible navigations only after 'spash' is rendered
+      setTimeout(() => {
+        let isOnboardingPassed = ActiveSession.isOnboardingPassed;
+        if (!isOnboardingPassed) {
+          router.navigate('/onboarding_screen')
+        } else {
+          // show main content
+          router.navigate('/(tabs)')
+        }
+      }, 200)
     },
     [] // call only on first render
   )
 
-  // should not happen for code to reach this place on runtime
+  // return empty view what is shown while all is loading on launch
   return (
-    <View>
-      <Text>it a first screen</Text>
-      <TouchableOpacity onPress={() => {
-        router.navigate('/onboarding_screen')
-      }}>
-        <Text>Route push onboarding_screen</Text>
-      </TouchableOpacity>
-    </View>
+    <View></View>
   )
 }
 
