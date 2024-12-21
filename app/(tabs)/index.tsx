@@ -1,4 +1,4 @@
-import { Text, StyleSheet, TouchableOpacity, View } from 'react-native';
+import { Text, StyleSheet, TouchableOpacity, View, ScrollView } from 'react-native';
 import { HelloWave } from '@/components/HelloWave';
 import SessionRestorer from '@/features/active_session/session_restorer';
 import { AppScreenContainer } from '@/components/AppScreenContainer';
@@ -7,49 +7,83 @@ import Ionicons from '@expo/vector-icons/Ionicons';
 import { AppColors } from '@/assets/Colors';
 import { ThemedText } from '@/components/ThemedText';
 import { CancerType } from '@/features/auth/userData';
+import * as ImagePicker from 'expo-image-picker';
+import { useState } from 'react';
+import ImageViewer from '@/components/ImageViewer';
+import { router } from 'expo-router';
 
 export default function HomeScreen() {
 
   const sessionRestorer = new SessionRestorer()
 
+  // for choosed image form device lib
+  const [selectedImage, setSelectedImage] = useState<string | undefined>(undefined);
+
+  const pickImageAsync = async () => {
+    let result = await ImagePicker.launchImageLibraryAsync({
+      mediaTypes: ['images'],
+      allowsEditing: true,
+      quality: 1,
+    });
+    if (!result.canceled) {
+      console.log(result);
+      setSelectedImage(result.assets[0].uri);
+    } else {
+      alert('You did not select any image.');
+    }
+  }
+
   return (
     <AppScreenContainer style={{ backgroundColor: AppColors.white }}>
-      <UserInfoHeaderView />
-      <ThemedText type='default' style={{ color: '#888', marginHorizontal: 24, }}>Track your general feelings</ThemedText>
-      <TouchableOpacity
-        style={{ marginHorizontal: 24, padding: 16, backgroundColor: AppColors.appPinkLighter, borderRadius: 16 }}
-        onPress={() => { }}
-      >
-        <ThemedText type='defaultSemiBold' style={{ textAlign: 'center' }}>How are you feelings today?</ThemedText>
-      </TouchableOpacity>
-
-      <ThemedText type='default' style={{ color: '#888', marginHorizontal: 24, }}>Main diagnostic</ThemedText>
-      <MainDiagnosticCardView />
-
-      <View style={{
-        flexDirection: "row",
-        backgroundColor: AppColors.appPinkLighter,
-        justifyContent: 'space-evenly'
-      }}>
+      <ScrollView>
+        <UserInfoHeaderView />
+        <ThemedText type='default' style={{ color: '#888', marginHorizontal: 24, }}>Track your general feelings</ThemedText>
         <TouchableOpacity
+          style={{ marginHorizontal: 24, padding: 16, backgroundColor: AppColors.appPinkLighter, borderRadius: 16 }}
           onPress={() => { }}
         >
-          <Ionicons name='add-circle-sharp' color={AppColors.appPinkDarker} size={50} />
+          <ThemedText type='defaultSemiBold' style={{ textAlign: 'center' }}>How are you feelings today?</ThemedText>
         </TouchableOpacity>
-        <TouchableOpacity
-          onPress={() => { }}
+
+        <ThemedText type='default' style={{ color: '#888', marginHorizontal: 24, }}>Main diagnostic</ThemedText>
+        <MainDiagnosticCardView />
+
+        <View style={{
+          flexDirection: "row",
+          backgroundColor: AppColors.appPinkLighter,
+          justifyContent: 'space-evenly'
+        }}>
+          <TouchableOpacity
+            onPress={() => { }}
+          >
+            <Ionicons name='add-circle-sharp' color={AppColors.appPinkDarker} size={50} />
+          </TouchableOpacity>
+          <TouchableOpacity
+            onPress={() => { pickImageAsync() }}
+          >
+            <Ionicons name='scan-circle' color={AppColors.appPinkDarker} size={50} />
+          </TouchableOpacity>
+        </View>
+
+        <ThemedText
+          type='default'
+          style={{ color: '#888', marginHorizontal: 24 }}
         >
-          <Ionicons name='scan-circle' color={AppColors.appPinkDarker} size={50} />
+          Selected image:
+        </ThemedText>
+        <ImageViewer
+          imgSource={require('@/assets/images/react-logo.png')}
+          selectedImage={selectedImage}
+        />
+
+
+        <TouchableOpacity
+          style={{ marginEnd: 30 }}
+          onPress={() => { sessionRestorer.resetOnboardingState() }}
+        >
+          <Text>CLEAR of onboarding states</Text>
         </TouchableOpacity>
-      </View>
-
-
-      <TouchableOpacity
-        style={{ marginEnd: 30 }}
-        onPress={() => { sessionRestorer.resetOnboardingState() }}
-      >
-        <Text>CLEAR of onboarding states</Text>
-      </TouchableOpacity>
+      </ScrollView>
     </AppScreenContainer>
   )
 }
@@ -75,11 +109,26 @@ function MainDiagnosticCardView() {
   const mainCancerType = selectedCancerTypes[0] || CancerType.other
   const userConditionTypes = ActiveSession.userData.otherConditionTypes
   return (
-    <View style={{ margin: 24, padding: 16, backgroundColor: '#eee', borderRadius: 16 }}>
-      <View style={{ flexDirection: 'row' }}>
+    <View
+      style={{
+        margin: 24,
+        padding: 16,
+        backgroundColor: '#eee',
+        borderRadius: 16
+      }}
+    >
+      <TouchableOpacity
+        style={{ flexDirection: 'row' }}
+        onPress={() => {
+          router.navigate({
+            pathname: '/treatment_history_screen',
+            params: { cancerType: mainCancerType }
+          })
+        }}
+      >
         <Ionicons name='contract-outline' color={AppColors.black} size={50} />
         <ThemedText type='subtitle'>{mainCancerType}</ThemedText>
-      </View>
+      </TouchableOpacity>
       <View style={{ height: 16 }} />
       <ThemedText type='default'>Other diagnostics</ThemedText>
       <View style={{
