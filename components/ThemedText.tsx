@@ -9,12 +9,10 @@ export type ThemedTextProps = TextProps & {
 
 export function ThemedText({
   style,
-  lightColor,
-  darkColor,
   type = 'default',
   ...rest
 }: ThemedTextProps) {
-  const color = "#f1F";
+  const color = "#000";
 
   return (
     <Text

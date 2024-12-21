@@ -1,68 +1,111 @@
-import { Image, StyleSheet, Platform, TouchableOpacity } from 'react-native';
-
+import { Text, StyleSheet, TouchableOpacity, View } from 'react-native';
 import { HelloWave } from '@/components/HelloWave';
-import ParallaxScrollView from '@/components/ParallaxScrollView';
-import { ThemedText } from '@/components/ThemedText';
-import { ThemedView } from '@/components/ThemedView';
 import SessionRestorer from '@/features/active_session/session_restorer';
+import { AppScreenContainer } from '@/components/AppScreenContainer';
+import { ActiveSession } from '@/features/active_session/session_storage';
+import Ionicons from '@expo/vector-icons/Ionicons';
+import { AppColors } from '@/assets/Colors';
+import { ThemedText } from '@/components/ThemedText';
+import { CancerType } from '@/features/auth/userData';
 
 export default function HomeScreen() {
 
   const sessionRestorer = new SessionRestorer()
 
-
   return (
-    <ParallaxScrollView
-      headerBackgroundColor={{ light: '#A1CEDC', dark: '#1D3D47' }}
-      headerImage={
-        <Image
-          source={require('@/assets/images/partial-react-logo.png')}
-          style={styles.reactLogo}
-        />
-      }>
-      <ThemedView style={styles.titleContainer}>
-        <ThemedText type="title">Welcome!</ThemedText>
-        <HelloWave />
+    <AppScreenContainer style={{ backgroundColor: AppColors.white }}>
+      <UserInfoHeaderView />
+      <ThemedText type='default' style={{ color: '#888', marginHorizontal: 24, }}>Track your general feelings</ThemedText>
+      <TouchableOpacity
+        style={{ marginHorizontal: 24, padding: 16, backgroundColor: AppColors.appPinkLighter, borderRadius: 16 }}
+        onPress={() => { }}
+      >
+        <ThemedText type='defaultSemiBold' style={{ textAlign: 'center' }}>How are you feelings today?</ThemedText>
+      </TouchableOpacity>
+
+      <ThemedText type='default' style={{ color: '#888', marginHorizontal: 24, }}>Main diagnostic</ThemedText>
+      <MainDiagnosticCardView />
+
+      <View style={{
+        flexDirection: "row",
+        backgroundColor: AppColors.appPinkLighter,
+        justifyContent: 'space-evenly'
+      }}>
         <TouchableOpacity
-          style={{ marginEnd: 30 }}
-          onPress={() => { sessionRestorer.resetOnboardingState() }}
+          onPress={() => { }}
         >
-          <ThemedText>CLEAR of onboarding states</ThemedText>
+          <Ionicons name='add-circle-sharp' color={AppColors.appPinkDarker} size={50} />
         </TouchableOpacity>
-      </ThemedView>
-      <ThemedView style={styles.stepContainer}>
-        <ThemedText type="subtitle">Step 1: Try it</ThemedText>
-        <ThemedText>
-          Edit <ThemedText type="defaultSemiBold">app/(tabs)/index.tsx</ThemedText> to see changes.
-          Press{' '}
-          <ThemedText type="defaultSemiBold">
-            {Platform.select({
-              ios: 'cmd + d',
-              android: 'cmd + m',
-              web: 'F12'
-            })}
-          </ThemedText>{' '}
-          to open developer tools.
-        </ThemedText>
-      </ThemedView>
-      <ThemedView style={styles.stepContainer}>
-        <ThemedText type="subtitle">Step 2: Explore</ThemedText>
-        <ThemedText>
-          Tap the Explore tab to learn more about what's included in this starter app.
-        </ThemedText>
-      </ThemedView>
-      <ThemedView style={styles.stepContainer}>
-        <ThemedText type="subtitle">Step 3: Get a fresh start</ThemedText>
-        <ThemedText>
-          When you're ready, run{' '}
-          <ThemedText type="defaultSemiBold">npm run reset-project</ThemedText> to get a fresh{' '}
-          <ThemedText type="defaultSemiBold">app</ThemedText> directory. This will move the current{' '}
-          <ThemedText type="defaultSemiBold">app</ThemedText> to{' '}
-          <ThemedText type="defaultSemiBold">app-example</ThemedText>.
-        </ThemedText>
-      </ThemedView>
-    </ParallaxScrollView>
-  );
+        <TouchableOpacity
+          onPress={() => { }}
+        >
+          <Ionicons name='scan-circle' color={AppColors.appPinkDarker} size={50} />
+        </TouchableOpacity>
+      </View>
+
+
+      <TouchableOpacity
+        style={{ marginEnd: 30 }}
+        onPress={() => { sessionRestorer.resetOnboardingState() }}
+      >
+        <Text>CLEAR of onboarding states</Text>
+      </TouchableOpacity>
+    </AppScreenContainer>
+  )
+}
+
+function UserInfoHeaderView() {
+  const userName = ActiveSession.userData.name
+  return (
+    <View style={{ flexDirection: 'row', margin: 24 }}>
+      <View style={{ flexDirection: 'column', flex: 1 }}>
+        <View style={{ flexDirection: 'row' }}>
+          <ThemedText type='defaultSemiBold'>Hello</ThemedText>
+          <HelloWave />
+        </View>
+        <ThemedText type='subtitle'>{userName}</ThemedText>
+      </View>
+      <Ionicons name='contract-outline' color={AppColors.black} size={50} />
+    </View>
+  )
+}
+
+function MainDiagnosticCardView() {
+  const selectedCancerTypes = ActiveSession.userData.selectedCancerTypes
+  const mainCancerType = selectedCancerTypes[0] || CancerType.other
+  const userConditionTypes = ActiveSession.userData.otherConditionTypes
+  return (
+    <View style={{ margin: 24, padding: 16, backgroundColor: '#eee', borderRadius: 16 }}>
+      <View style={{ flexDirection: 'row' }}>
+        <Ionicons name='contract-outline' color={AppColors.black} size={50} />
+        <ThemedText type='subtitle'>{mainCancerType}</ThemedText>
+      </View>
+      <View style={{ height: 16 }} />
+      <ThemedText type='default'>Other diagnostics</ThemedText>
+      <View style={{
+        flexDirection: "row",
+        flexWrap: "wrap",
+        alignItems: 'flex-start',
+        justifyContent: 'space-between'
+      }}>
+        {
+          userConditionTypes.map(item => (
+            <View style={{
+              flexDirection: 'row',
+              alignItems: "center",
+              borderRadius: 16,
+              backgroundColor: AppColors.appPinkLighter,
+              paddingHorizontal: 9
+            }}
+              key={item}>
+              <Ionicons name='heart' color={AppColors.black} size={15} />
+              <ThemedText type='default'>{item}</ThemedText>
+            </View>
+          ))
+        }
+      </View>
+    </View>
+  )
 }
 
 const styles = StyleSheet.create({
@@ -70,16 +113,5 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
     gap: 8,
-  },
-  stepContainer: {
-    gap: 8,
-    marginBottom: 8,
-  },
-  reactLogo: {
-    height: 178,
-    width: 290,
-    bottom: 0,
-    left: 0,
-    position: 'absolute',
-  },
+  }
 });

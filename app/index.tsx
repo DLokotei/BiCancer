@@ -1,5 +1,5 @@
 import { View } from 'react-native'
-import React, { useEffect } from 'react'
+import React, { useEffect, useLayoutEffect } from 'react'
 import { router } from 'expo-router';
 import { ActiveSession } from '@/features/active_session/session_storage';
 
@@ -10,7 +10,7 @@ import { ActiveSession } from '@/features/active_session/session_storage';
 
 const entry_point_screen = () => {
 
-  useEffect(
+  useLayoutEffect(
     () => {
       // call possible navigations only after 'spash' is rendered
       setTimeout(() => {
