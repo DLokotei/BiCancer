@@ -1,4 +1,5 @@
-import { View, Text, StyleSheet, Button, TouchableOpacity, Image } from 'react-native'
+import { View, Text, StyleSheet, TouchableOpacity } from 'react-native'
+import Ionicons from '@expo/vector-icons/Ionicons';
 import React, { useState } from 'react'
 import { Stack } from 'expo-router'
 import { AppColors } from '@/assets/Colors';
@@ -14,9 +15,7 @@ const availableSteps: Array<() => React.ReactNode> = [
 
 const onboarding_screen = () => {
   const sessionRestorer = new SessionRestorer()
-
-  let someValue = false
-  let [getCurrentStep, setCurrentStep] = useState(0);
+  let [getCurrentStep, setCurrentStep] = useState(0)
 
   function displayCurrentStep(step: number): React.ReactNode {
     switch (step) {
@@ -47,35 +46,41 @@ const onboarding_screen = () => {
     setCurrentStep(newStepIndex)
   }
 
+  function renderNavigationArrows(): React.ReactNode {
+    const showBackButton = getCurrentStep > 0
+    const isLastScreenShown = getCurrentStep == availableSteps.length - 1
+    const nextButtonContent = isLastScreenShown ? (<>
+      <Text style={styles.textCommon}>Done</Text>
+    </>) : (<>
+      <Text style={styles.textCommon}>Next</Text>
+      <Ionicons name='arrow-forward' size={20} color="#FFF" />
+    </>)
+
+    return (
+      <View style={styles.buttonsRow}>
+        <TouchableOpacity
+          style={[styles.navigationButton, { display: showBackButton ? 'flex' : 'none' }]}
+          onPress={() => { changeStep(getCurrentStep - 1) }}
+        >
+          <Text style={styles.textCommon}>Prev</Text>
+          <Ionicons name='arrow-back' size={20} color="#FFF" />
+        </TouchableOpacity>
+        <TouchableOpacity
+          style={styles.navigationButton}
+          onPress={() => { changeStep(getCurrentStep + 1) }}
+        >
+          {nextButtonContent}
+        </TouchableOpacity>
+      </View>
+    )
+  }
+
   return (
     <>
       <Stack.Screen options={{ headerShown: false }} />
       <View style={styles.allWrap}>
         {displayCurrentStep(getCurrentStep)}
-        <View style={styles.buttonsRow} >
-          {getCurrentStep != 0 &&
-            <TouchableOpacity
-              style={[styles.nextButton, { marginEnd: 30 }]}
-              onPress={() => { changeStep(getCurrentStep - 1) }}
-            >
-              <Text style={styles.headerText}>Prev</Text>
-              <Image
-                source={require('@/assets/images/arrow_left_white_20.png')}
-                style={{ height: 20, width: 23, opacity: 1, marginLeft: 7 }}
-              />
-            </TouchableOpacity>
-          }
-          <TouchableOpacity
-            style={styles.nextButton}
-            onPress={() => { changeStep(getCurrentStep + 1) }}
-          >
-            <Text style={styles.headerText}>Next</Text>
-            <Image
-              source={require('@/assets/images/arrow_right_white_20.png')}
-              style={{ height: 20, width: 23, opacity: 1, marginLeft: 7 }}
-            />
-          </TouchableOpacity>
-        </View>
+        {renderNavigationArrows()}
       </View>
     </>
   )
@@ -86,25 +91,23 @@ export default onboarding_screen
 const styles = StyleSheet.create({
   allWrap: {
     backgroundColor: AppColors.appPinkDarker,
-    flex: 1,
-    alignItems: 'center'
+    flex: 1
   },
-  headerText: {
+  textCommon: {
+    fontFamily: 'SpaceMono',
     color: '#fff',
     fontSize: 15,
   },
   buttonsRow: {
     flexDirection: 'row',
-    justifyContent: 'space-between',
-    marginBottom: 24
+    alignItems: 'stretch',
+    justifyContent: 'space-evenly',
+    marginVertical: 24
   },
-  nextButton: {
-    width: 'auto',
+  navigationButton: {
     borderWidth: 0,
     borderRadius: 8,
     backgroundColor: AppColors.appPinkLighter,
-    alignContent: 'center',
-    alignItems: 'center',
     padding: 10,
     flexDirection: 'row'
   }

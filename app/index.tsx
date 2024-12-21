@@ -14,8 +14,7 @@ const entry_point_screen = () => {
     () => {
       // call possible navigations only after 'spash' is rendered
       setTimeout(() => {
-        let isOnboardingPassed = ActiveSession.isOnboardingPassed;
-        if (!isOnboardingPassed) {
+        if (!ActiveSession.isOnboardingPassed) {
           router.navigate('/onboarding_screen')
         } else {
           // show main content
