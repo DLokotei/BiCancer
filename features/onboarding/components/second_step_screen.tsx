@@ -100,7 +100,7 @@ function CancerCardView({ imgSource, name, checked, cancerType, onChackedChanged
     const [isCheked, setIsCheked] = useState(checked);
     const cardBackgroundColor = isCheked ? '#336' : AppColors.white
     const checkmarkIcon = isCheked ? (
-        <Ionicons name='checkmark-done-circle' size={15} color={'#9F9'} style={{ position: 'absolute', left: 15, top: 15 }} />
+        <Ionicons name='checkmark-circle' size={15} color={'#FFF'} style={{ position: 'absolute', left: 15, top: 15 }} />
     ) : null
 
     return (

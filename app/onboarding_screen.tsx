@@ -1,16 +1,17 @@
 import { View, Text, StyleSheet, TouchableOpacity } from 'react-native'
 import Ionicons from '@expo/vector-icons/Ionicons';
 import React, { useState } from 'react'
-import { Stack } from 'expo-router'
+import { router, Stack } from 'expo-router'
 import { AppColors } from '@/assets/Colors';
 import { FirstStepView } from '@/features/onboarding/components/first_step_screen';
 import { SecondStepView } from '@/features/onboarding/components/second_step_screen';
 import { ThirdStepView } from '@/features/onboarding/components/third_step_screen';
 import SessionRestorer from '@/features/active_session/session_restorer';
+import { AppScreenContainer } from '@/components/AppScreenContainer';
 
 
-const availableSteps: Array<() => React.ReactNode> = [
-  FirstStepView, SecondStepView, ThirdStepView
+const availableSteps: Array<React.ReactNode> = [
+  (<FirstStepView/>), (<SecondStepView/>), (<ThirdStepView/>)
 ]
 
 const onboarding_screen = () => {
@@ -18,16 +19,7 @@ const onboarding_screen = () => {
   let [getCurrentStep, setCurrentStep] = useState(0)
 
   function displayCurrentStep(step: number): React.ReactNode {
-    switch (step) {
-      case 0:
-        return FirstStepView()
-      case 1:
-        return SecondStepView()
-      case 2:
-        return ThirdStepView()
-      default:
-        return FirstStepView()
-    }
+    return availableSteps[step]
   }
 
   function changeStep(newStepIndex: number) {
@@ -36,7 +28,8 @@ const onboarding_screen = () => {
     const maximumIndex = availableSteps.length - 1
     const minimumIndex = 0
     if (newStepIndex > maximumIndex) {
-      setCurrentStep(maximumIndex)
+      sessionRestorer.saveIsOnboardingPassed()
+      router.navigate('/(tabs)')
       return
     }
     if (newStepIndex < minimumIndex) {
@@ -59,10 +52,9 @@ const onboarding_screen = () => {
     return (
       <View style={styles.buttonsRow}>
         <TouchableOpacity
-          style={[styles.navigationButton, { display: showBackButton ? 'flex' : 'none' }]}
+          style={{ display: showBackButton ? 'flex' : 'none', width: 50, height: 40, alignItems: 'center', justifyContent: 'center' }}
           onPress={() => { changeStep(getCurrentStep - 1) }}
         >
-          <Text style={styles.textCommon}>Prev</Text>
           <Ionicons name='arrow-back' size={20} color="#FFF" />
         </TouchableOpacity>
         <TouchableOpacity
@@ -76,13 +68,11 @@ const onboarding_screen = () => {
   }
 
   return (
-    <>
+    <AppScreenContainer>
       <Stack.Screen options={{ headerShown: false }} />
-      <View style={styles.allWrap}>
-        {displayCurrentStep(getCurrentStep)}
-        {renderNavigationArrows()}
-      </View>
-    </>
+      {displayCurrentStep(getCurrentStep)}
+      {renderNavigationArrows()}
+    </AppScreenContainer>
   )
 }
 
@@ -109,6 +99,8 @@ const styles = StyleSheet.create({
     borderRadius: 8,
     backgroundColor: AppColors.appPinkLighter,
     padding: 10,
-    flexDirection: 'row'
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'center' 
   }
 })

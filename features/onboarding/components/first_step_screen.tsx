@@ -14,8 +14,6 @@ export const FirstStepView = () => {
     const oAgeChanged = (newAge: number) => {
         userData.age = newAge
     }
-    console.log('FirstStepView - userData.age')
-    console.log(userData.age)
 
     return (
         <View style={styles.allWrap}>
@@ -64,11 +62,14 @@ const styles = StyleSheet.create({
         fontWeight: '400'
     },
     input: {
+        width: "auto",
+        minWidth: "30%",
         height: 40,
         margin: 12,
         borderWidth: 0,
         borderRadius: 8,
         backgroundColor: AppColors.white,
         padding: 10,
+        textAlign: "center"
     },
 })
