@@ -45,6 +45,16 @@ export default class SessionRestorer {
         }
     }
 
+    wipeUserData: ()=> void = () => {
+        try {
+            AsyncStorage.removeItem(this.USER_DATA_STORAGE_KEY);
+        } catch (e) {
+            // shoult not happen
+            console.error('error while call wipeUserData')
+            console.error(e)
+        }
+    }
+
     restoreIsOnborgingPassed: () => void = async () => {
         try {
             const jsonString = await AsyncStorage.getItem(this.IS_ONBOARDING_PASSED_STORAGE_KEY);
